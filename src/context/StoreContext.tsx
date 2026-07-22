@@ -20,8 +20,9 @@ interface StoreContextType {
   isAdmin: boolean;
   isAuthLoading: boolean;
 
-  // Firebase Auth operations
-  loginWithGoogle: () => Promise<void>;
+  // Firebase & Direct Auth operations
+  loginWithGoogle: () => Promise<{ user: any; error: string | null }>;
+  loginWithCustomEmail: (email: string, name?: string) => void;
   logout: () => Promise<void>;
 
   // Role switching for demo
@@ -164,10 +165,43 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const loginWithGoogle = async () => {
     const { user: fbUser, error } = await signInWithGoogle();
     if (error) {
-      showToast('خطأ في تسجيل الدخول', error, 'error');
+      showToast('تنبيه تسجيل الدخول', error, 'error');
     } else if (fbUser) {
       showToast('مرحباً بك!', `تم تسجيل الدخول بنجاح بواسطة Google (${fbUser.email})`, 'success');
     }
+    return { user: fbUser, error };
+  };
+
+  // Login with Custom Email (Fail-safe for Vercel/Local)
+  const loginWithCustomEmail = (email: string, name?: string) => {
+    const userEmail = email.trim().toLowerCase();
+    const displayName = name || userEmail.split('@')[0];
+    const isAdminRole = userEmail === ADMIN_EMAIL.toLowerCase();
+
+    setAllUsers((prevUsers) => {
+      const existing = prevUsers.find((u) => u.email.toLowerCase() === userEmail);
+      if (existing) {
+        const updated: UserProfile = {
+          ...existing,
+          name: displayName,
+          role: isAdminRole ? 'admin' : existing.role
+        };
+        setCurrentUser(updated);
+        return prevUsers.map((u) => (u.id === existing.id ? updated : u));
+      } else {
+        const newUser: UserProfile = {
+          id: `usr-${Date.now()}`,
+          email: userEmail,
+          name: displayName,
+          walletBalanceIqd: 0,
+          role: isAdminRole ? 'admin' : 'customer'
+        };
+        setCurrentUser(newUser);
+        return [...prevUsers, newUser];
+      }
+    });
+
+    showToast('تم تسجيل الدخول!', `أهلاً بك (${displayName}) - ${isAdminRole ? 'حساب أدمن' : 'حساب زبون'}`, 'success');
   };
 
   // Logout
@@ -400,6 +434,7 @@ export const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         isAdmin,
         isAuthLoading,
         loginWithGoogle,
+        loginWithCustomEmail,
         logout,
         switchUserRole,
         addAccount,
