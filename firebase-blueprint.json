@@ -1,0 +1,39 @@
+{
+  "collections": {
+    "users": {
+      "schema": {
+        "email": "string",
+        "name": "string",
+        "walletBalanceIqd": "number",
+        "role": "string",
+        "photoURL": "string"
+      }
+    },
+    "deposits": {
+      "schema": {
+        "userId": "string",
+        "userEmail": "string",
+        "userName": "string",
+        "method": "string",
+        "amountIqd": "number",
+        "senderPhone": "string",
+        "proofImageUrl": "string",
+        "status": "string",
+        "createdAt": "string"
+      }
+    },
+    "orders": {
+      "schema": {
+        "accountId": "string",
+        "accountTitle": "string",
+        "game": "string",
+        "priceIqd": "number",
+        "userId": "string",
+        "userEmail": "string",
+        "userName": "string",
+        "status": "string",
+        "createdAt": "string"
+      }
+    }
+  }
+}

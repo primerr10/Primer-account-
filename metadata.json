@@ -1,0 +1,6 @@
+{
+  "name": "متجر حسابات بيس eFootball",
+  "description": "منصة بيع وتداول حسابات بيس (eFootball) الموثوقة مع دعم بوابات دفع زين كاش واسياسيل وتسليم إلكتروني بضمان الأدمن",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
